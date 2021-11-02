@@ -14,8 +14,11 @@ exports.createUser = async (req, res, next) => {
 
   const contractErrors = await userService.validateEmailAndPassword(body)
   if (contractErrors.length > 0) {
-    res.status(400).send(contractErrors)
-    return
+    const err = new CustomError('Dados enviados possuem erro.', {
+      status: 400,
+      errors: contractErrors
+    })
+    return next(err)
   }
 
   try {
@@ -51,8 +54,11 @@ exports.login = async (req, res, next) => {
 
   const contractErrors = await userService.validateEmailAndPassword(body)
   if (contractErrors.length > 0) {
-    res.status(400).send(contractErrors)
-    return
+    const err = new CustomError('Dados enviados possuem erro.', {
+      status: 400,
+      errors: contractErrors
+    })
+    return next(err)
   }
 
   const userData = await repository.findByEmail(body.email)

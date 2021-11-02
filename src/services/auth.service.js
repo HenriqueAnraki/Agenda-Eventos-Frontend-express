@@ -15,7 +15,7 @@ exports.authorize = async (req, res, next) => {
 
   if (!token) {
     const err = new CustomError('Acesso Restrito.', { status: 401 })
-    next(err)
+    return next(err)
   }
 
   token = token.split(' ')[1]
@@ -24,7 +24,7 @@ exports.authorize = async (req, res, next) => {
     await jwt.verify(token, tokenConfig.secret)
   } catch (err) {
     const newErr = new CustomError('Sessão expirada!', { status: 401 })
-    next(newErr)
+    return next(newErr)
   }
 
   next()

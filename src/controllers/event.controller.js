@@ -6,30 +6,38 @@ const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const eventService = require('../services/event.service')
 
-const debug = require('debug')('server')
+// const debug = require('debug')('server')
 
 exports.createNewEvent = async (req, res, next) => {
+  // ta convertendo para UTC
   const body = req.body
 
   const contractErrors = await eventService.validateEventData(body)
   if (contractErrors.length > 0) {
-    res.status(400).send(contractErrors)
-    return
+    // res.status(400).send(contractErrors)
+    const err = new CustomError('Dados enviados possuem erro.', {
+      status: 400,
+      errors: contractErrors
+    })
+    return next(err)
   }
 
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
 
-  const event = await repository.createNewEvent({
+  if (await eventService.hasEventOverlap(userId, body)) {
+    const err = new CustomError('Evento se sobrepoem com outros!', { status: 400 })
+    return next(err)
+  }
+
+  await repository.createNewEvent({
     start: body.start,
     end: body.end,
     description: body.description,
     owner: userId
   })
 
-  console.log(event)
   res.status(201).send({
-    message: 'Evento criado com sucesso!',
-    events: event
+    message: 'Evento criado com sucesso!'
   })
 }
 

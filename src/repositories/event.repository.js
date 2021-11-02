@@ -9,6 +9,22 @@ exports.createNewEvent = async (data) => {
 }
 
 exports.findByOwner = async (id) => {
-  const events = await Event.find({ owner: id }, 'start end description')
+  const events = await Event
+    .find({ owner: id }, 'start end description')
+    .sort({ start: 'asc' })
   return events
+}
+
+exports.countEventOverlap = async (userId, start, end) => {
+  const numOverlaps = await Event.find({
+    owner: userId,
+    start: { $lt: end },
+    end: { $gt: start }
+  }).count()
+
+  return numOverlaps
+}
+
+exports.hasOverlapExcludingOne = async (start, end) => {
+
 }
