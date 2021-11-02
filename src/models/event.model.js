@@ -31,6 +31,7 @@ const schema = new Schema({
     status: {
       type: String,
       enum: ['pending', 'confirmed', 'refused'],
+      default: 'pending',
       required: true
     }
   }]

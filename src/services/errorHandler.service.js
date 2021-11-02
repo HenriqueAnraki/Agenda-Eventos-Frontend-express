@@ -28,7 +28,7 @@ const errorHandler = (err, req, res, next) => {
   // console.log(err);
 
   res.status(500).send({
-    message: err.message // 'Something broke!',
+    message: 'Erro interno!'// err.message // 'Something broke!',
   })
 }
 

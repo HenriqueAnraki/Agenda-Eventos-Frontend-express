@@ -1,4 +1,5 @@
 'use strict'
+const date = require('date-and-time')
 
 let errors = []
 
@@ -33,6 +34,16 @@ ValidationContract.prototype.isFixedLen = (value, len, message) => {
 ValidationContract.prototype.isEmail = (value, message) => {
   const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
   if (!reg.test(value)) {
+    errors.push({ message: message })
+  }
+}
+
+ValidationContract.prototype.areValidDate = (start, end, message) => {
+  if (!start || !end ||
+    !(date.isValid(start, 'YYYY-MM-DD HH:mm:ss')) ||
+    !(date.isValid(end, 'YYYY-MM-DD HH:mm:ss')) ||
+    start >= end
+  ) {
     errors.push({ message: message })
   }
 }

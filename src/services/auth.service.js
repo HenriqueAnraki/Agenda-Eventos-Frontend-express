@@ -3,8 +3,11 @@ const CustomError = require('../classes/customError')
 const { tokenConfig } = require('../config')
 
 exports.generateToken = async (data) => {
-  console.log(data)
   return jwt.sign(data, tokenConfig.secret, { expiresIn: tokenConfig.duration })
+}
+
+exports.decodeToken = async (token) => {
+  return jwt.verify(token, tokenConfig.secret)
 }
 
 exports.authorize = async (req, res, next) => {
