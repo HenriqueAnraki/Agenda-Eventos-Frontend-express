@@ -18,8 +18,7 @@ const customErrorHandler = (err, req, res, next) => {
     delete err.options?.status
 
     res.status(status).send({
-      message: err.message, // 'Something broke!',
-      error: err
+      message: err.message // 'Something broke!',
     })
   }
   next(err)

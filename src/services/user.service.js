@@ -1,7 +1,5 @@
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
 
-const { token } = require('../config')
 const repository = require('../repositories/user.repository')
 const ValidationContract = require('../validators/fluent.validator')
 
@@ -40,9 +38,4 @@ exports.hashPassword = async (password) => {
 
 exports.isCorrectPassword = async (password, hash) => {
   return bcrypt.compare(password, hash)
-}
-
-exports.generateToken = async (data) => {
-  console.log(data)
-  return jwt.sign(data, token.tokenSecret, { expiresIn: token.duration })
 }

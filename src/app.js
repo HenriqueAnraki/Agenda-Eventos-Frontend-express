@@ -44,7 +44,7 @@ app.use(function (req, res, next) {
 // Routes
 app.use('/', indexRoute)
 app.use('/users', userRoute)
-// app.use('/events', eventRoute)
+app.use('/events', eventRoute)
 
 // Error handler
 // console.log(typeof errorHandler)

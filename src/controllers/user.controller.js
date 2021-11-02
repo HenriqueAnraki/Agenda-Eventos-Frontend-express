@@ -4,6 +4,7 @@ const repository = require('../repositories/user.repository')
 // const ValidationContract = require('../validators/fluent-validator')
 const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
+const authService = require('../services/auth.service')
 
 const debug = require('debug')('server')
 
@@ -45,11 +46,6 @@ exports.createUser = async (req, res, next) => {
 }
 
 exports.login = async (req, res, next) => {
-/**
- * verify correct email/pass
- * generate token
- * return token
- */
   debug('Login')
   const body = req.body
 
@@ -61,21 +57,22 @@ exports.login = async (req, res, next) => {
 
   const userData = await repository.findByEmail(body.email)
 
-  try {
-    if (await userService.isCorrectPassword(body.password, userData.password)) {
-      const token = await userService.generateToken({
-        id: userData._id
-      })
+  // try {
+  if (await userService.isCorrectPassword(body.password, userData.password)) {
+    const token = await authService.generateToken({
+      id: userData._id
+    })
 
-      res.status(200).send({
-        token
-      })
-      return
-    }
-
-    // res.status(401).send('Email ou senha inválidos!')
-    throw new CustomError('Email ou senha inválidos!', { status: 401 })
-  } catch (err) {
-    next(err)
+    res.status(200).send({
+      token
+    })
+    return
   }
+
+  // res.status(401).send('Email ou senha inválidos!')
+  const err = new CustomError('Email ou senha inválidos!', { status: 401 })
+  next(err)
+  // } catch (err) {
+  //   next(err)
+  // }
 }
