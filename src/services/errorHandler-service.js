@@ -13,24 +13,24 @@ Resumo:
     ->pq isso esta na parte de erros?
 */
 
-
 const debug = require('debug')('server')
 
 // [todo] melhorar criando tipo de erro especifico
 // aplicar conehcimentos do video de erro
 
-module.exports = errorHandler = (err, req, res, next) => {
-    // delegating error handling to express    
-    if (res.headersSent) {
-        return next(err)
-    }
-    debug('error Handler')
-    console.error(err.stack);
-    // console.log(err);
+const errorHandler = (err, req, res, next) => {
+  // delegating error handling to express
+  if (res.headersSent) {
+    return next(err)
+  }
+  debug('error Handler')
+  console.error(err.stack)
+  // console.log(err);
 
-    res.status(500).send({ 
-        message: err.message,// 'Something broke!',
-        error: err
-    });
-};
+  res.status(500).send({
+    message: err.message, // 'Something broke!',
+    error: err
+  })
+}
 
+module.exports = errorHandler
