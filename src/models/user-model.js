@@ -9,12 +9,12 @@ const schema = new Schema({
     // },
     password: {
         type: String,
-        required
+        required: true
     },
     email: {
         type: String,
-        unique,
-        index
+        unique: true,
+        index: true
     }
 })
 

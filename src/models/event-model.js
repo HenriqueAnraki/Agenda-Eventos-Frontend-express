@@ -6,13 +6,13 @@ const Schema = mongoose.Schema;
 const schema = new Schema({
     start: {
         type: Date,
-        required,
-        index
+        required: true,
+        index: true
     },
     end: {
         type: Date,
-        required,
-        index
+        required: true,
+        index: true
     },
     description: {
         type: String
@@ -20,18 +20,18 @@ const schema = new Schema({
     owner: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User',
-        required
+        required: true
     },
     guests: [{
         user: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'User',
-            required
+            required: true
         },
         status: {
             type: String,
             enum: ['pending', 'confirmed', 'refused'],
-            required
+            required: true
         }
     }]
 })
