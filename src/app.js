@@ -3,18 +3,18 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const config = require('./config')
-const errorHandler = require('./services/errorHandler-service')
-const customErrorHandler = require('./services/customErrorHandler-service')
+const errorHandler = require('./services/errorHandler.service')
+const customErrorHandler = require('./services/customErrorHandler.service')
 /// const customErrorHandler = require('./services/customErrorhandler-service')
 
 // Models imports
-const User = require('./models/user-model')
-const Event = require('./models/event-model')
+const User = require('./models/user.model')
+const Event = require('./models/event.model')
 
 // Routes imports
-const indexRoute = require('./routes/index-route')
-const userRoute = require('./routes/user-route')
-const eventRoute = require('./routes/event-route')
+const indexRoute = require('./routes/index.route')
+const userRoute = require('./routes/user.route')
+const eventRoute = require('./routes/event.route')
 
 // App
 const app = express()

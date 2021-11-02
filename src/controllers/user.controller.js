@@ -1,9 +1,9 @@
 'use-strict'
 
-const repository = require('../repositories/user-repository')
+const repository = require('../repositories/user.repository')
 // const ValidationContract = require('../validators/fluent-validator')
 const CustomError = require('../classes/customError')
-const userService = require('../services/user-service')
+const userService = require('../services/user.service')
 
 const debug = require('debug')('server')
 

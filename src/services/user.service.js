@@ -2,8 +2,8 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const { token } = require('../config')
-const repository = require('../repositories/user-repository')
-const ValidationContract = require('../validators/fluent-validator')
+const repository = require('../repositories/user.repository')
+const ValidationContract = require('../validators/fluent.validator')
 
 const saltRounds = 10
 
