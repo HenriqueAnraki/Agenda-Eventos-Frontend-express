@@ -25,6 +25,11 @@ module.exports = errorHandler = (err, req, res, next) => {
         return next(err)
     }
     debug('error Handler')
-    console.error(err);
-    res.status(500).send({ message: 'Something broke!' });
+    console.error(err.stack);
+    // console.log(err);
+    res.status(500).send({ 
+        message: err.message,// 'Something broke!',
+        error: err
+    });
 };
+
