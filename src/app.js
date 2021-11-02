@@ -2,8 +2,11 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
-const config = require('./config')
-const errorHandler = require('./services/errorhandler')
+const config = require('./config');
+const errorHandler = require('./services/errorHandler-service');
+const customErrorHandler = require('./services/customErrorHandler-service');
+/// const customErrorHandler = require('./services/customErrorhandler-service');
+
 
 // Models imports
 const User = require('./models/user-model');
@@ -48,7 +51,8 @@ app.use('/users', userRoute);
 // Error handler
 // console.log(typeof errorHandler)
 // console.log(errorHandler)
-app.use(errorHandler)
+app.use(customErrorHandler);
+app.use(errorHandler);
 
 
 module.exports = app;
