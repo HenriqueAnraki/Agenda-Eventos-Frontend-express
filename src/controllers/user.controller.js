@@ -39,11 +39,6 @@ exports.createUser = async (req, res, next) => {
       throw new CustomError('Email ja cadastrado!', { status: 400 })
     }
   } catch (err) {
-    debug('COMECOU AQUI')
-    // console.log(err)
-    // res.status(500).send({
-    //     message: 'Falha ao processar sua requisição'
-    // });
     next(err)
   }
 }
@@ -79,6 +74,34 @@ exports.login = async (req, res, next) => {
   const err = new CustomError('Email ou senha inválidos!', { status: 401 })
   next(err)
   // } catch (err) {
+  //   next(err)
+  // }
+}
+
+exports.getUserIdByEmail = async (req, res, next) => {
+  debug('get user by emails')
+  const email = req.params.email
+
+  const contractErrors = await userService.validateEmail(email)
+  if (contractErrors.length > 0) {
+    const err = new CustomError('Dados enviados possuem erro.', {
+      status: 400,
+      errors: contractErrors
+    })
+    return next(err)
+  }
+
+  // try {
+  const data = await repository.getIdByEmail(email)
+
+  res.status(200).send(data)
+
+  // } catch (err) {
+  //   debug('COMECOU AQUI')
+  //   // console.log(err)
+  //   // res.status(500).send({
+  //   //     message: 'Falha ao processar sua requisição'
+  //   // });
   //   next(err)
   // }
 }

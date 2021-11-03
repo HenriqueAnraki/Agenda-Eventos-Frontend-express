@@ -18,6 +18,14 @@ exports.isEmailValid = async (email) => {
   return true
 }
 
+exports.validateEmail = async (email) => {
+  const contract = new ValidationContract()
+  contract.isRequired(email, 'E-mail é obrigatória.')
+  contract.isEmail(email, 'E-mail inválido.')
+
+  return contract.errors()
+}
+
 exports.validateEmailAndPassword = async (data) => {
   const contract = new ValidationContract()
   contract.isRequired(data.email, 'E-mail é obrigatória.')
