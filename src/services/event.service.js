@@ -17,3 +17,11 @@ exports.hasEventOverlap = async (userId, data) => {
 
   return numOverlaps > 0
 }
+
+exports.willUpdatedEventOverlap = async (userId, eventId, data) => {
+  const numOverlaps = await repository.countEventOverlapExcludingOne(userId, eventId, data.start, data.end)
+
+  console.log(numOverlaps)
+
+  return numOverlaps > 0
+}
