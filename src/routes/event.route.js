@@ -7,6 +7,7 @@ const asyncHandler = require('../services/asyncHandler.service')
 
 const router = express.Router()
 
+router.get('/:id', asyncHandler(authService.authorize), asyncHandler(controller.getUserEventsById))
 router.get('/', asyncHandler(authService.authorize), asyncHandler(controller.getUserEvents))
 router.post('/', asyncHandler(authService.authorize), asyncHandler(controller.createNewEvent))
 

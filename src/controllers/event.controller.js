@@ -47,5 +47,11 @@ exports.getUserEvents = async (req, res, next) => {
   const userEvents = await repository.findByOwner(userId)
 
   console.log(userEvents)
-  res.status(200).send({ myEvents: userEvents })
+  res.status(200).send({ events: userEvents })
+}
+
+exports.getUserEventsById = async (req, res, next) => {
+  const userEvent = await repository.findById(req.params.id)
+
+  res.status(200).send({ event: userEvent })
 }

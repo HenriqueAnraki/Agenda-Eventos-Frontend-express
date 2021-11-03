@@ -8,10 +8,15 @@ exports.createNewEvent = async (data) => {
   await event.save()
 }
 
-exports.findByOwner = async (id) => {
+exports.findByOwner = async (userId) => {
   const events = await Event
-    .find({ owner: id }, 'start end description')
+    .find({ owner: userId }, 'start end description guests')
     .sort({ start: 'asc' })
+  return events
+}
+
+exports.findById = async (id) => {
+  const events = await Event.findById(id, 'start end description guests')
   return events
 }
 
