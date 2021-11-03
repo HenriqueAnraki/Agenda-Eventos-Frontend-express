@@ -8,9 +8,11 @@ exports.createNewEvent = async (data) => {
   await event.save()
 }
 
+/**
+ * Get user events, including pending and confirmed invites
+ */
 exports.getByOwner = async (userId) => {
   const events = await Event
-    // .find({ owner: userId }, 'start end description guests')
     .find({
       $or: [
         { owner: userId },
@@ -28,8 +30,6 @@ exports.getByOwner = async (userId) => {
 }
 
 exports.getById = async (eventId, userId) => {
-  // it is getting indpendent of the owner -> change to find one
-  // const event = await Event.findById(id, 'start end description guests owner', { owner: userId })
   const event = await Event.findOne({ _id: eventId, owner: userId }, 'start end description guests owner')
   return event
 }
@@ -44,6 +44,9 @@ exports.countEventOverlap = async (userId, start, end) => {
   return numOverlaps
 }
 
+/**
+ * Verify if the new time of the event being updated is valid.
+ */
 exports.countEventOverlapExcludingOne = async (userId, eventId, start, end) => {
   const numOverlaps = await Event.find({
     _id: { $ne: eventId },
@@ -56,7 +59,6 @@ exports.countEventOverlapExcludingOne = async (userId, eventId, start, end) => {
 }
 
 exports.update = async (eventId, data) => {
-  // await Event.findByIdAndUpdate(eventId, {
   await Event.findOneAndUpdate({
     _id: eventId,
     owner: data.owner
@@ -70,14 +72,13 @@ exports.update = async (eventId, data) => {
 }
 
 exports.delete = async (eventId, userId) => {
-  // await Event.findByIdAndUpdate(eventId, {
   await Event.findOneAndRemove({
     _id: eventId,
     owner: userId
   })
 }
 
-exports.addGuests = async (eventId, userId, guests) => {
+exports.setGuests = async (eventId, userId, guests) => {
   await Event.findOneAndUpdate({
     _id: eventId,
     owner: userId
@@ -99,7 +100,7 @@ exports.updateGuestStatus = async (eventId, userId, answer) => {
   })
 }
 
-exports.getEventByIdAndGuest = async (eventId, userId) => {
+exports.getEventByIdAndGuestId = async (eventId, userId) => {
   const event = await Event.findOne({
     _id: eventId,
     'guests.user': userId

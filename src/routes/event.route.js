@@ -3,16 +3,23 @@
 const express = require('express')
 const controller = require('../controllers/event.controller')
 const authService = require('../services/auth.service')
-const asyncHandler = require('../services/asyncHandler.service')
+const AH = require('../services/asyncHandler.service')
 
 const router = express.Router()
 
-router.get('/:id', asyncHandler(authService.authorize), asyncHandler(controller.getUserEventsById))
-router.get('/', asyncHandler(authService.authorize), asyncHandler(controller.getUserEvents))
-router.post('/guests/answer/:id', asyncHandler(authService.authorize), asyncHandler(controller.answerInvite))
-router.post('/guests/:id', asyncHandler(authService.authorize), asyncHandler(controller.addGuests))
-router.post('/', asyncHandler(authService.authorize), asyncHandler(controller.createNewEvent))
-router.put('/:id', asyncHandler(authService.authorize), asyncHandler(controller.updateEvent))
-router.delete('/:id', asyncHandler(authService.authorize), asyncHandler(controller.deleteEvent))
+// Get
+router.get('/:id', AH(authService.authorize), AH(controller.getUserEventById))
+router.get('/', AH(authService.authorize), AH(controller.getUserEvents))
+
+// Post
+router.post('/guests/answer/:id', AH(authService.authorize), AH(controller.answerInvite))
+router.post('/guests/:id', AH(authService.authorize), AH(controller.setGuests))
+router.post('/', AH(authService.authorize), AH(controller.createNewEvent))
+
+// Put
+router.put('/:id', AH(authService.authorize), AH(controller.updateEvent))
+
+// Delete
+router.delete('/:id', AH(authService.authorize), AH(controller.deleteEvent))
 
 module.exports = router

@@ -5,7 +5,6 @@ const mongoose = require('mongoose')
 const config = require('./config')
 const errorHandler = require('./services/errorHandler.service')
 const customErrorHandler = require('./services/customErrorHandler.service')
-/// const customErrorHandler = require('./services/customErrorhandler-service')
 
 // Models imports
 const User = require('./models/user.model')
@@ -18,9 +17,6 @@ const eventRoute = require('./routes/event.route')
 
 // App
 const app = express()
-
-// Router
-// const router = express.Router()
 
 // BD
 mongoose.connect(config.connectionString)
@@ -35,7 +31,6 @@ app.use(express.urlencoded({
 // CORS
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
   res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type')
   res.setHeader('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, PATCH, OPTIONS')
   next()
@@ -46,9 +41,7 @@ app.use('/', indexRoute)
 app.use('/users', userRoute)
 app.use('/events', eventRoute)
 
-// Error handler
-// console.log(typeof errorHandler)
-// console.log(errorHandler)
+// Error handlers
 app.use(customErrorHandler)
 app.use(errorHandler)
 

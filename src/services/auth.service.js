@@ -1,3 +1,7 @@
+/**
+ * Auth functions
+ */
+
 const jwt = require('jsonwebtoken')
 const CustomError = require('../classes/customError')
 const { tokenConfig } = require('../config')
@@ -18,6 +22,7 @@ exports.authorize = async (req, res, next) => {
     return next(err)
   }
 
+  // Removing 'Bearer '
   token = token.split(' ')[1]
 
   try {

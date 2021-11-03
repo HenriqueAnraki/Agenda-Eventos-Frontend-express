@@ -1,3 +1,7 @@
+/**
+ * Handle only CustomError type of errors
+ */
+
 const CustomError = require('../classes/customError')
 
 const debug = require('debug')('server')
@@ -18,7 +22,7 @@ const customErrorHandler = (err, req, res, next) => {
     delete err.options?.status
 
     res.status(status).send({
-      message: err.message, // 'Something broke!',
+      message: err.message || 'Erro interno!',
       options: err.options
     })
   }

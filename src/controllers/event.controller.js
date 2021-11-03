@@ -6,6 +6,8 @@ const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const eventService = require('../services/event.service')
 
+const { allowedAnswers } = require('../config')
+
 const debug = require('debug')('server')
 
 exports.createNewEvent = async (req, res, next) => {
@@ -14,7 +16,6 @@ exports.createNewEvent = async (req, res, next) => {
 
   const contractErrors = await eventService.validateEventData(body)
   if (contractErrors.length > 0) {
-    // res.status(400).send(contractErrors)
     const err = new CustomError('Dados enviados possuem erro.', {
       status: 400,
       errors: contractErrors
@@ -41,19 +42,19 @@ exports.createNewEvent = async (req, res, next) => {
   })
 }
 
+/**
+ * Get user events, including pending and confirmed invites
+ */
 exports.getUserEvents = async (req, res, next) => {
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
 
   const userEvents = await repository.getByOwner(userId)
 
-  console.log(userEvents)
   res.status(200).send({ events: userEvents })
 }
 
-exports.getUserEventsById = async (req, res, next) => {
+exports.getUserEventById = async (req, res, next) => {
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
-
-  debug(userId)
 
   const userEvent = await repository.getById(req.params.id, userId)
 
@@ -69,7 +70,6 @@ exports.updateEvent = async (req, res, next) => {
 
   const contractErrors = await eventService.validateEventData(body)
   if (contractErrors.length > 0) {
-    // res.status(400).send(contractErrors)
     const err = new CustomError('Dados enviados possuem erro.', {
       status: 400,
       errors: contractErrors
@@ -98,7 +98,6 @@ exports.updateEvent = async (req, res, next) => {
 
 exports.deleteEvent = async (req, res, next) => {
   debug('remove event')
-  // [todo]está convertendo para UTC
   const eventId = req.params.id
 
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
@@ -110,15 +109,13 @@ exports.deleteEvent = async (req, res, next) => {
   })
 }
 
-exports.addGuests = async (req, res, next) => {
+exports.setGuests = async (req, res, next) => {
   debug('add guests')
-  // [todo]está convertendo para UTC
-  const guests = req.body.guests
+  const guestsIds = req.body.guests
   const eventId = req.params.id
 
-  const contractErrors = await eventService.validateRequiredValue(guests, 'Convidados são obrigatórios.')
+  const contractErrors = await eventService.validateRequiredValue(guestsIds, 'Convidados são obrigatórios.')
   if (contractErrors.length > 0) {
-    // res.status(400).send(contractErrors)
     const err = new CustomError('Dados enviados possuem erro.', {
       status: 400,
       errors: contractErrors
@@ -126,28 +123,24 @@ exports.addGuests = async (req, res, next) => {
     return next(err)
   }
 
-  debug(guests)
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
-  debug(userId)
 
   // [todo] control repeated ids
-  if (guests.includes(userId)) {
-    const idx = guests.indexOf(userId)
-    guests.splice(idx, 1)
+  // Removing user own id
+  if (guestsIds.includes(userId)) {
+    const idx = guestsIds.indexOf(userId)
+    guestsIds.splice(idx, 1)
   }
 
-  debug('here: ' + guests)
-
-  const guestsToAdd = guests.map(guest => {
+  // Convert the id array (guests) to event.guests format
+  const guestsToAdd = guestsIds.map(guestId => {
     return {
-      user: guest,
+      user: guestId,
       status: 'pending'
     }
   })
 
-  debug(guestsToAdd)
-
-  await repository.addGuests(eventId, userId, guestsToAdd)
+  await repository.setGuests(eventId, userId, guestsToAdd)
 
   res.status(200).send({
     message: 'Evento atualizado com sucesso!'
@@ -156,13 +149,11 @@ exports.addGuests = async (req, res, next) => {
 
 exports.answerInvite = async (req, res, next) => {
   debug('answer invite')
-  // [todo]está convertendo para UTC
   const answer = req.body.answer
   const eventId = req.params.id
 
   const contractErrors = await eventService.validateRequiredValue(answer, 'Resposta é obrigatória.')
   if (contractErrors.length > 0) {
-    // res.status(400).send(contractErrors)
     const err = new CustomError('Dados enviados possuem erro.', {
       status: 400,
       errors: contractErrors
@@ -170,20 +161,17 @@ exports.answerInvite = async (req, res, next) => {
     return next(err)
   }
 
-  debug(answer)
-  const allowedAnswers = ['confirmed', 'refused']
+  // Verifing if the answer is valid
   if (!allowedAnswers.includes(answer)) {
     const err = new CustomError('Resposta inválida.', {
       status: 400
     })
     return next(err)
-  } else {
-    debug('HEY')
   }
 
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
 
-  const eventToAnswer = await repository.getEventByIdAndGuest(eventId, userId)
+  const eventToAnswer = await repository.getEventByIdAndGuestId(eventId, userId)
 
   debug(eventToAnswer)
 
@@ -192,7 +180,7 @@ exports.answerInvite = async (req, res, next) => {
     return next(err)
   }
 
-  // await repository.updateGuestStatus(eventId, userId, answer)
+  await repository.updateGuestStatus(eventId, userId, answer)
 
   res.status(200).send({
     message: 'Resposta atualizada com sucesso!'

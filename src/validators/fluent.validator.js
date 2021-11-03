@@ -1,3 +1,7 @@
+/**
+ * Collection of validations methods
+ */
+
 'use strict'
 const date = require('date-and-time')
 
@@ -38,6 +42,7 @@ ValidationContract.prototype.isEmail = (value, message) => {
   }
 }
 
+// validate a start and an end date
 ValidationContract.prototype.areValidDate = (start, end, message) => {
   if (!start || !end ||
     !(date.isValid(start, 'YYYY-MM-DD HH:mm:ss')) ||

@@ -1,7 +1,6 @@
 'use-strict'
 
 const repository = require('../repositories/user.repository')
-// const ValidationContract = require('../validators/fluent-validator')
 const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const authService = require('../services/auth.service')
@@ -21,25 +20,18 @@ exports.createUser = async (req, res, next) => {
     return next(err)
   }
 
-  try {
-    if (await userService.isEmailValid(body.email)) {
-      console.log('é valido')
+  if (await userService.isEmailValid(body.email)) {
+    await repository.create({
+      email: body.email,
+      password: await userService.hashPassword(body.password)
+    })
 
-      // const data =
-      await repository.create({
-        email: body.email,
-        password: await userService.hashPassword(body.password)
-      })
-
-      res.status(201).send({
-        message: 'Cliente cadastrado com sucesso!'
-      })
-    } else {
-      // throw new Error('Email ja cadastrado!')
-      throw new CustomError('Email ja cadastrado!', { status: 400 })
-    }
-  } catch (err) {
-    next(err)
+    res.status(201).send({
+      message: 'Cliente cadastrado com sucesso!'
+    })
+  } else {
+    const err = new CustomError('Email ja cadastrado!', { status: 400 })
+    return next(err)
   }
 }
 
@@ -58,7 +50,6 @@ exports.login = async (req, res, next) => {
 
   const userData = await repository.findByEmail(body.email)
 
-  // try {
   if (await userService.isCorrectPassword(body.password, userData.password)) {
     const token = await authService.generateToken({
       id: userData._id
@@ -70,12 +61,8 @@ exports.login = async (req, res, next) => {
     return
   }
 
-  // res.status(401).send('Email ou senha inválidos!')
   const err = new CustomError('Email ou senha inválidos!', { status: 401 })
   next(err)
-  // } catch (err) {
-  //   next(err)
-  // }
 }
 
 exports.getUserIdByEmail = async (req, res, next) => {
@@ -91,17 +78,7 @@ exports.getUserIdByEmail = async (req, res, next) => {
     return next(err)
   }
 
-  // try {
   const data = await repository.getIdByEmail(email)
 
   res.status(200).send(data)
-
-  // } catch (err) {
-  //   debug('COMECOU AQUI')
-  //   // console.log(err)
-  //   // res.status(500).send({
-  //   //     message: 'Falha ao processar sua requisição'
-  //   // });
-  //   next(err)
-  // }
 }

@@ -1,3 +1,7 @@
+/**
+ * Functions for User
+ */
+
 const bcrypt = require('bcryptjs')
 
 const repository = require('../repositories/user.repository')
@@ -9,12 +13,9 @@ const saltRounds = 10
 exports.isEmailValid = async (email) => {
   const userWithEmail = await repository.findByEmail(email)
 
-  console.log(userWithEmail)
-
   if (userWithEmail) {
     return false
   }
-
   return true
 }
 
@@ -33,10 +34,6 @@ exports.validateEmailAndPassword = async (data) => {
   contract.isRequired(data.password, 'Senha é obrigatória.')
   contract.hasMinLen(data.password, 3, 'A senha deve conter pelo menos 3 caracteres.')
 
-  // if (!contract.isValid()) {
-  //   res.status(400).send(contract.errors())
-  //   // return
-  // }
   return contract.errors()
 }
 
