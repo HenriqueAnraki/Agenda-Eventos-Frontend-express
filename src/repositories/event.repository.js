@@ -10,8 +10,20 @@ exports.createNewEvent = async (data) => {
 
 exports.getByOwner = async (userId) => {
   const events = await Event
-    .find({ owner: userId }, 'start end description guests')
+    // .find({ owner: userId }, 'start end description guests')
+    .find({
+      $or: [
+        { owner: userId },
+        {
+          $and: [
+            { 'guests.user': { $in: userId } },
+            { 'guests.status': { $ne: 'refused' } }
+          ]
+        }
+      ]
+    })
     .sort({ start: 'asc' })
+    .populate('guests.user', 'email')
   return events
 }
 
@@ -62,5 +74,16 @@ exports.delete = async (eventId, userId) => {
   await Event.findOneAndRemove({
     _id: eventId,
     owner: userId
+  })
+}
+
+exports.addGuests = async (eventId, userId, guests) => {
+  await Event.findOneAndUpdate({
+    _id: eventId,
+    owner: userId
+  }, {
+    $set: {
+      guests: guests
+    }
   })
 }

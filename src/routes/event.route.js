@@ -9,6 +9,7 @@ const router = express.Router()
 
 router.get('/:id', asyncHandler(authService.authorize), asyncHandler(controller.getUserEventsById))
 router.get('/', asyncHandler(authService.authorize), asyncHandler(controller.getUserEvents))
+router.post('/guests/:id', asyncHandler(authService.authorize), asyncHandler(controller.addGuests))
 router.post('/', asyncHandler(authService.authorize), asyncHandler(controller.createNewEvent))
 router.put('/:id', asyncHandler(authService.authorize), asyncHandler(controller.updateEvent))
 router.delete('/:id', asyncHandler(authService.authorize), asyncHandler(controller.deleteEvent))

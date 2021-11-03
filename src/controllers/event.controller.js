@@ -109,3 +109,47 @@ exports.deleteEvent = async (req, res, next) => {
     message: 'Evento removido com sucesso!'
   })
 }
+
+exports.addGuests = async (req, res, next) => {
+  debug('add guests')
+  // [todo]está convertendo para UTC
+  const guests = req.body.guests
+  const eventId = req.params.id
+
+  const contractErrors = await eventService.validateGuestsData(guests)
+  if (contractErrors.length > 0) {
+    // res.status(400).send(contractErrors)
+    const err = new CustomError('Dados enviados possuem erro.', {
+      status: 400,
+      errors: contractErrors
+    })
+    return next(err)
+  }
+
+  debug(guests)
+  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  debug(userId)
+
+  // [todo] control repeated ids
+  if (userId in guests) {
+    const idx = guests.indexOf(userId)
+    guests.splice(idx, 1)
+  }
+
+  debug('here: ' + guests)
+
+  const guestsToAdd = guests.map(guest => {
+    return {
+      user: guest,
+      status: 'pending'
+    }
+  })
+
+  debug(guestsToAdd)
+
+  await repository.addGuests(eventId, userId, guestsToAdd)
+
+  res.status(200).send({
+    message: 'Evento atualizado com sucesso!'
+  })
+}
