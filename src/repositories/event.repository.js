@@ -56,3 +56,11 @@ exports.update = async (eventId, data) => {
     }
   })
 }
+
+exports.delete = async (eventId, userId) => {
+  // await Event.findByIdAndUpdate(eventId, {
+  await Event.findOneAndRemove({
+    _id: eventId,
+    owner: userId
+  })
+}

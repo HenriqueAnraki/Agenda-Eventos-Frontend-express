@@ -11,5 +11,6 @@ router.get('/:id', asyncHandler(authService.authorize), asyncHandler(controller.
 router.get('/', asyncHandler(authService.authorize), asyncHandler(controller.getUserEvents))
 router.post('/', asyncHandler(authService.authorize), asyncHandler(controller.createNewEvent))
 router.put('/:id', asyncHandler(authService.authorize), asyncHandler(controller.updateEvent))
+router.delete('/:id', asyncHandler(authService.authorize), asyncHandler(controller.deleteEvent))
 
 module.exports = router

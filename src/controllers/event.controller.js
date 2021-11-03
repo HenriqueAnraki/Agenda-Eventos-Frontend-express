@@ -91,7 +91,21 @@ exports.updateEvent = async (req, res, next) => {
     owner: userId
   })
 
-  res.status(201).send({
+  res.status(200).send({
     message: 'Evento atualizado com sucesso!'
+  })
+}
+
+exports.deleteEvent = async (req, res, next) => {
+  debug('remove event')
+  // [todo]está convertendo para UTC
+  const eventId = req.params.id
+
+  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+
+  await repository.delete(eventId, userId)
+
+  res.status(200).send({
+    message: 'Evento removido com sucesso!'
   })
 }
