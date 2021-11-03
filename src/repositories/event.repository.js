@@ -87,3 +87,23 @@ exports.addGuests = async (eventId, userId, guests) => {
     }
   })
 }
+
+exports.updateGuestStatus = async (eventId, userId, answer) => {
+  await Event.findOneAndUpdate({
+    _id: eventId,
+    'guests.user': userId
+  }, {
+    $set: {
+      'guests.$.status': answer
+    }
+  })
+}
+
+exports.getEventByIdAndGuest = async (eventId, userId) => {
+  const event = await Event.findOne({
+    _id: eventId,
+    'guests.user': userId
+  }, 'start end')
+
+  return event
+}

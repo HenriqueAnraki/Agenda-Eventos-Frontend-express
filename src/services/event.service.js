@@ -1,9 +1,9 @@
 const ValidationContract = require('../validators/fluent.validator')
 const repository = require('../repositories/event.repository')
 
-exports.validateGuestsData = async (guests) => {
+exports.validateRequiredValue = async (value, message) => {
   const contract = new ValidationContract()
-  contract.isRequired(guests, 'Convidados são obrigatórios..')
+  contract.isRequired(value, message)
 
   return contract.errors()
 }

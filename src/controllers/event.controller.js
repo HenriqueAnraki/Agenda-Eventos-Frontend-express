@@ -116,7 +116,7 @@ exports.addGuests = async (req, res, next) => {
   const guests = req.body.guests
   const eventId = req.params.id
 
-  const contractErrors = await eventService.validateGuestsData(guests)
+  const contractErrors = await eventService.validateRequiredValue(guests, 'Convidados são obrigatórios.')
   if (contractErrors.length > 0) {
     // res.status(400).send(contractErrors)
     const err = new CustomError('Dados enviados possuem erro.', {
@@ -131,7 +131,7 @@ exports.addGuests = async (req, res, next) => {
   debug(userId)
 
   // [todo] control repeated ids
-  if (userId in guests) {
+  if (guests.includes(userId)) {
     const idx = guests.indexOf(userId)
     guests.splice(idx, 1)
   }
@@ -151,5 +151,50 @@ exports.addGuests = async (req, res, next) => {
 
   res.status(200).send({
     message: 'Evento atualizado com sucesso!'
+  })
+}
+
+exports.answerInvite = async (req, res, next) => {
+  debug('answer invite')
+  // [todo]está convertendo para UTC
+  const answer = req.body.answer
+  const eventId = req.params.id
+
+  const contractErrors = await eventService.validateRequiredValue(answer, 'Resposta é obrigatória.')
+  if (contractErrors.length > 0) {
+    // res.status(400).send(contractErrors)
+    const err = new CustomError('Dados enviados possuem erro.', {
+      status: 400,
+      errors: contractErrors
+    })
+    return next(err)
+  }
+
+  debug(answer)
+  const allowedAnswers = ['confirmed', 'refused']
+  if (!allowedAnswers.includes(answer)) {
+    const err = new CustomError('Resposta inválida.', {
+      status: 400
+    })
+    return next(err)
+  } else {
+    debug('HEY')
+  }
+
+  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+
+  const eventToAnswer = await repository.getEventByIdAndGuest(eventId, userId)
+
+  debug(eventToAnswer)
+
+  if (await eventService.willUpdatedEventOverlap(userId, eventId, eventToAnswer)) {
+    const err = new CustomError('Evento irá se sobrepor com outros!', { status: 400 })
+    return next(err)
+  }
+
+  // await repository.updateGuestStatus(eventId, userId, answer)
+
+  res.status(200).send({
+    message: 'Resposta atualizada com sucesso!'
   })
 }
