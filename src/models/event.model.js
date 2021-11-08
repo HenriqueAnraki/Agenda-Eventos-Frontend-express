@@ -1,8 +1,12 @@
 'use strict'
 
+const date = require('date-and-time')
+
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+// options is necessary so mongoose populate virtuals fields in normal requests
+const options = { toJSON: { virtuals: true } }
 const schema = new Schema({
   start: {
     type: Date,
@@ -35,6 +39,15 @@ const schema = new Schema({
       required: true
     }
   }]
+},
+options)
+
+schema.virtual('startTZ').get(function () {
+  return date.format(this.start, 'YYYY-MM-DD HH:mm:ss')
+})
+
+schema.virtual('endTZ').get(function () {
+  return date.format(this.end, 'YYYY-MM-DD HH:mm:ss')
 })
 
 module.exports = mongoose.model('Event', schema)
