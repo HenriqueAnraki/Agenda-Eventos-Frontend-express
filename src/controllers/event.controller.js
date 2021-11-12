@@ -6,7 +6,7 @@ const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const eventService = require('../services/event.service')
 
-const { allowedAnswers } = require('../config')
+const { allowedAnswers, answersEnum } = require('../config')
 
 const debug = require('debug')('server')
 
@@ -109,7 +109,7 @@ exports.deleteEvent = async (req, res, next) => {
   })
 }
 
-exports.setGuests = async (req, res, next) => {
+exports.addGuests = async (req, res, next) => {
   debug('add guests')
   const guestsIds = req.body.guests
   const eventId = req.params.id
@@ -126,21 +126,17 @@ exports.setGuests = async (req, res, next) => {
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
 
   // [todo] control repeated ids
-  // Removing user own id
-  if (guestsIds.includes(userId)) {
-    const idx = guestsIds.indexOf(userId)
-    guestsIds.splice(idx, 1)
-  }
+  const newGuestsIds = await eventService.getNewGuestsIds(eventId, userId, guestsIds)
 
   // Convert the id array (guests) to event.guests format
-  const guestsToAdd = guestsIds.map(guestId => {
+  const guestsToAdd = newGuestsIds.map(guestId => {
     return {
       user: guestId,
       status: 'pending'
     }
   })
 
-  await repository.setGuests(eventId, userId, guestsToAdd)
+  await repository.addGuests(eventId, userId, guestsToAdd)
 
   res.status(200).send({
     message: 'Evento atualizado com sucesso!'
@@ -149,6 +145,7 @@ exports.setGuests = async (req, res, next) => {
 
 exports.answerInvite = async (req, res, next) => {
   debug('answer invite')
+
   const answer = req.body.answer
   const eventId = req.params.id
 
@@ -175,7 +172,8 @@ exports.answerInvite = async (req, res, next) => {
 
   debug(eventToAnswer)
 
-  if (await eventService.willUpdatedEventOverlap(userId, eventId, eventToAnswer)) {
+  // If refusing, don't verify overlap
+  if (answer === answersEnum.POSITIVE && await eventService.willUpdatedEventOverlap(userId, eventId, eventToAnswer)) {
     const err = new CustomError('Evento irá se sobrepor com outros!', { status: 400 })
     return next(err)
   }

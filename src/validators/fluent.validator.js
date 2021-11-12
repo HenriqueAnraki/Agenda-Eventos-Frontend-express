@@ -3,7 +3,7 @@
  */
 
 'use strict'
-const date = require('date-and-time')
+const moment = require('moment')
 
 let errors = []
 
@@ -45,8 +45,8 @@ ValidationContract.prototype.isEmail = (value, message) => {
 // validate a start and an end date
 ValidationContract.prototype.areValidDate = (start, end, message) => {
   if (!start || !end ||
-    !(date.isValid(start, 'YYYY-MM-DD HH:mm:ss')) ||
-    !(date.isValid(end, 'YYYY-MM-DD HH:mm:ss')) ||
+    !moment(start, moment.ISO_8601).isValid() ||
+    !moment(end, moment.ISO_8601).isValid() ||
     start >= end
   ) {
     errors.push({ message: message })

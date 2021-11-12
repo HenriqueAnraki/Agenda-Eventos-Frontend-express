@@ -34,6 +34,7 @@ exports.getByOwner = async (userId) => {
 exports.getById = async (eventId, userId) => {
   const event = await Event.findOne({ _id: eventId, owner: userId }, 'start end description guests owner')
     .populate('guests.user', 'email')
+    .populate('owner', 'email')
   return event
 }
 
@@ -81,12 +82,12 @@ exports.delete = async (eventId, userId) => {
   })
 }
 
-exports.setGuests = async (eventId, userId, guests) => {
+exports.updateGuests = async (eventId, userId, guests) => {
   await Event.findOneAndUpdate({
     _id: eventId,
     owner: userId
   }, {
-    $set: {
+    $push: {
       guests: guests
     }
   })

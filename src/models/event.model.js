@@ -1,7 +1,5 @@
 'use strict'
 
-const date = require('date-and-time')
-
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
