@@ -50,9 +50,10 @@ exports.login = async (req, res, next) => {
 
   const userData = await repository.findByEmail(body.email)
 
-  if (await userService.isCorrectPassword(body.password, userData.password)) {
+  if (userData && await userService.isCorrectPassword(body.password, userData.password)) {
     const token = await authService.generateToken({
-      id: userData._id
+      id: userData._id,
+      email: userData.email
     })
 
     res.status(200).send({
@@ -80,5 +81,11 @@ exports.getUserIdByEmail = async (req, res, next) => {
 
   const data = await repository.getIdByEmail(email)
 
+  if (!data) {
+    const err = new CustomError('Email não encontrado.', {
+      status: 400
+    })
+    return next(err)
+  }
   res.status(200).send(data)
 }

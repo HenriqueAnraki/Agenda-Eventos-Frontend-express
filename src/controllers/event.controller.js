@@ -50,7 +50,7 @@ exports.getUserEvents = async (req, res, next) => {
 
   const userEvents = await repository.getByOwner(userId)
 
-  res.status(200).send({ events: userEvents })
+  res.status(200).send(userEvents)
 }
 
 exports.getUserEventById = async (req, res, next) => {
@@ -58,7 +58,7 @@ exports.getUserEventById = async (req, res, next) => {
 
   const userEvent = await repository.getById(req.params.id, userId)
 
-  res.status(200).send({ event: userEvent })
+  res.status(200).send(userEvent)
 }
 
 // [todo] falar quando o usuario tenta editar um evento que não é seu?

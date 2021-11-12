@@ -13,5 +13,5 @@ exports.findByEmail = async (email) => {
 }
 
 exports.getIdByEmail = async (email) => {
-  return User.find({ email }, '_id email')
+  return User.findOne({ email }, '_id email')
 }

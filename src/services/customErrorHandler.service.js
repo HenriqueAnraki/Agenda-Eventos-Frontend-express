@@ -25,6 +25,7 @@ const customErrorHandler = (err, req, res, next) => {
       message: err.message || 'Erro interno!',
       options: err.options
     })
+    return
   }
   next(err)
 }

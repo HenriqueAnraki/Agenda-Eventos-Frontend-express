@@ -12,8 +12,8 @@ router.get('/:id', AH(authService.authorize), AH(controller.getUserEventById))
 router.get('/', AH(authService.authorize), AH(controller.getUserEvents))
 
 // Post
-router.post('/guests/answer/:id', AH(authService.authorize), AH(controller.answerInvite))
-router.post('/guests/:id', AH(authService.authorize), AH(controller.setGuests))
+router.post('/:id/guests/answer', AH(authService.authorize), AH(controller.answerInvite))
+router.post('/:id/guests', AH(authService.authorize), AH(controller.setGuests))
 router.post('/', AH(authService.authorize), AH(controller.createNewEvent))
 
 // Put

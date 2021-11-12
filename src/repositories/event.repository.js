@@ -8,6 +8,7 @@ exports.createNewEvent = async (data) => {
   await event.save()
 }
 
+// [TODO] CHANGE NAME (get by user ID)
 /**
  * Get user events, including pending and confirmed invites
  */
@@ -26,11 +27,13 @@ exports.getByOwner = async (userId) => {
     })
     .sort({ start: 'asc' })
     .populate('guests.user', 'email')
+    .populate('owner', 'email')
   return events
 }
 
 exports.getById = async (eventId, userId) => {
   const event = await Event.findOne({ _id: eventId, owner: userId }, 'start end description guests owner')
+    .populate('guests.user', 'email')
   return event
 }
 
