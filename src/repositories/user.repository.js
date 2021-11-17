@@ -11,7 +11,3 @@ exports.create = async (data) => {
 exports.findByEmail = async (email) => {
   return User.findOne({ email })
 }
-
-exports.getIdByEmail = async (email) => {
-  return User.findOne({ email }, '_id email')
-}

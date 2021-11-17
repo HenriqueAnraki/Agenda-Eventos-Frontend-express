@@ -3,8 +3,10 @@
 const express = require('express')
 const router = express.Router()
 
+const { HTTP_ERROR } = require('../enums/httpErrors')
+
 router.get('/', (erq, res, next) => {
-  res.status(200).send({
+  res.status(HTTP_ERROR.OK).send({
     title: 'Agenda de eventos API',
     version: '1.0.0'
   })

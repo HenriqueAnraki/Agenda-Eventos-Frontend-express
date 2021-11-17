@@ -37,26 +37,21 @@ exports.getById = async (eventId, userId) => {
   return event
 }
 
-exports.countEventOverlap = async (userId, start, end) => {
-  const numOverlaps = await Event.find({
+exports.countEventOverlap = async (start, end, userId, eventId = null) => {
+  const query = {
     owner: userId,
     start: { $lt: end },
     end: { $gt: start }
-  }).count()
+  }
 
-  return numOverlaps
-}
+  /**
+   * Verify if the new time of the event being updated is valid.
+   */
+  if (eventId) {
+    query._id = { $ne: eventId }
+  }
 
-/**
- * Verify if the new time of the event being updated is valid.
- */
-exports.countEventOverlapExcludingOne = async (userId, eventId, start, end) => {
-  const numOverlaps = await Event.find({
-    _id: { $ne: eventId },
-    owner: userId,
-    start: { $lt: end },
-    end: { $gt: start }
-  }).count()
+  const numOverlaps = await Event.find(query).count()
 
   return numOverlaps
 }

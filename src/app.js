@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const config = require('./config')
 const errorHandler = require('./services/errorHandler.service')
 const customErrorHandler = require('./services/customErrorHandler.service')
+const authService = require('./services/auth.service')
 
 // Models imports
 const User = require('./models/user.model')
@@ -33,6 +34,15 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type')
   res.setHeader('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, PATCH, OPTIONS')
+  next()
+})
+
+app.use(function (req, res, next) {
+  const token = req.headers.authorization
+
+  if (token) {
+    req.id = authService.getUserIdFromToken(token)
+  }
   next()
 })
 

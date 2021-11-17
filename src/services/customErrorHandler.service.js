@@ -3,6 +3,7 @@
  */
 
 const CustomError = require('../classes/customError')
+const { HTTP_ERROR } = require('../enums/httpErrors')
 
 const debug = require('debug')('server')
 
@@ -17,7 +18,7 @@ const customErrorHandler = (err, req, res, next) => {
   if (err instanceof CustomError) {
     console.error(err.stack)
 
-    const status = err.options?.status || 500
+    const status = err.options?.status || HTTP_ERROR.INTERNAL_SERVER_ERROR
 
     delete err.options?.status
 
