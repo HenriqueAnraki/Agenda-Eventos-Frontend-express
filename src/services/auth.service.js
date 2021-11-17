@@ -11,9 +11,11 @@ exports.generateToken = async (data) => {
   return jwt.sign(data, tokenConfig.secret, { expiresIn: tokenConfig.duration })
 }
 
-exports.decodeToken = async (token) => {
+const decodeToken = (token) => {
   return jwt.verify(token, tokenConfig.secret)
 }
+
+exports.decodeToken = decodeToken
 
 exports.authorize = async (req, res, next) => {
   let token = req.headers.authorization
@@ -27,11 +29,19 @@ exports.authorize = async (req, res, next) => {
   token = token.split(' ')[1]
 
   try {
-    await jwt.verify(token, tokenConfig.secret)
+    jwt.verify(token, tokenConfig.secret)
   } catch (err) {
     const newErr = new CustomError('Sessão expirada!', { status: HTTP_ERROR.UNAUTHORIZED })
     return next(newErr)
   }
 
   next()
+}
+
+exports.getUserIdFromToken = (fullToken) => {
+  // Removing 'Bearer '
+  const token = fullToken.split(' ')[1]
+  const userData = decodeToken(token)
+
+  return userData.id
 }

@@ -5,7 +5,6 @@
 const bcrypt = require('bcryptjs')
 
 const repository = require('../repositories/user.repository')
-const authService = require('../services/auth.service')
 
 const saltRounds = 10
 
@@ -24,11 +23,4 @@ exports.hashPassword = async (password) => {
 
 exports.isCorrectPassword = async (password, hash) => {
   return bcrypt.compare(password, hash)
-}
-
-exports.getUserIdFromToken = async (fullToken) => {
-  const token = fullToken.split(' ')[1]
-  const userData = await authService.decodeToken(token)
-
-  return userData.id
 }

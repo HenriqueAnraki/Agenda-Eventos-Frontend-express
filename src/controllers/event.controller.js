@@ -20,7 +20,8 @@ exports.createNewEvent = async (req, res, next) => {
     return next(contractErrors)
   }
 
-  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  // const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  const userId = req.id
 
   if (await eventService.hasEventOverlap(userId, body)) {
     const err = new CustomError('Evento se sobrepoem com outros!', { status: HTTP_ERROR.BAD_REQUEST })
@@ -43,7 +44,7 @@ exports.createNewEvent = async (req, res, next) => {
  * Get user events, including pending and confirmed invites
  */
 exports.getUserEvents = async (req, res, next) => {
-  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  const userId = req.id
 
   const userEvents = await repository.getByOwner(userId)
 
@@ -51,7 +52,7 @@ exports.getUserEvents = async (req, res, next) => {
 }
 
 exports.getUserEventById = async (req, res, next) => {
-  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  const userId = req.id
 
   const userEvent = await repository.getById(req.params.id, userId)
 
@@ -68,7 +69,7 @@ exports.updateEvent = async (req, res, next) => {
     return next(contractErrors)
   }
 
-  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  const userId = req.id
 
   if (await eventService.willUpdatedEventOverlap(userId, eventId, body)) {
     const err = new CustomError('Evento irá se sobrepor com outros!', { status: HTTP_ERROR.BAD_REQUEST })
@@ -91,7 +92,7 @@ exports.deleteEvent = async (req, res, next) => {
   debug('remove event')
   const eventId = req.params.id
 
-  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  const userId = req.id
 
   await repository.delete(eventId, userId)
 
@@ -110,7 +111,7 @@ exports.addGuests = async (req, res, next) => {
     return next(contractErrors)
   }
 
-  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  const userId = req.id
 
   const newGuestsIds = await eventService.getNewGuestsIds(eventId, userId, guestsIds)
 
@@ -148,7 +149,7 @@ exports.answerInvite = async (req, res, next) => {
     return next(err)
   }
 
-  const userId = await userService.getUserIdFromToken(req.headers.authorization)
+  const userId = req.id
 
   const eventToAnswer = await repository.getEventByIdAndGuestId(eventId, userId)
 
