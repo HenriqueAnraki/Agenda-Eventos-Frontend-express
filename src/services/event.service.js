@@ -5,12 +5,12 @@
 const repository = require('../repositories/event.repository')
 
 exports.hasEventOverlap = async (userId, data) => {
-  const numOverlaps = await repository.countEventOverlap(userId, data.start, data.end)
+  const numOverlaps = await repository.countEventOverlap(data.start, data.end, userId)
   return numOverlaps > 0
 }
 
 exports.willUpdatedEventOverlap = async (userId, eventId, data) => {
-  const numOverlaps = await repository.countEventOverlapExcludingOne(userId, eventId, data.start, data.end)
+  const numOverlaps = await repository.countEventOverlap(data.start, data.end, userId, eventId)
   return numOverlaps > 0
 }
 
