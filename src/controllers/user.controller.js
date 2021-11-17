@@ -69,7 +69,7 @@ exports.getUserIdByEmail = async (req, res, next) => {
     return next(contractErrors)
   }
 
-  const data = await repository.getIdByEmail(email)
+  const data = await repository.findByEmail(email)
 
   if (!data) {
     const err = new CustomError('Email não encontrado.', {
@@ -77,5 +77,9 @@ exports.getUserIdByEmail = async (req, res, next) => {
     })
     return next(err)
   }
-  res.status(HTTP_ERROR.OK).send(data)
+
+  res.status(HTTP_ERROR.OK).send({
+    _id: data._id,
+    emial: data.email
+  })
 }
