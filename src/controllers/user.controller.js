@@ -80,6 +80,6 @@ exports.getUserIdByEmail = async (req, res, next) => {
 
   res.status(HTTP_ERROR.OK).send({
     _id: data._id,
-    emial: data.email
+    email: data.email
   })
 }

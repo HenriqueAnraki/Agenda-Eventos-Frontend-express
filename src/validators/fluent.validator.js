@@ -53,6 +53,23 @@ ValidationContract.prototype.areValidDate = (start, end, message) => {
   }
 }
 
+ValidationContract.prototype.dontHaveRepeatedGuests = (currentGuests, guestsIdsToBeInvited, message) => {
+  for (let i = 0; i < currentGuests.length; i++) {
+    const currentGuestId = currentGuests[i].user._id.toString()
+
+    if (guestsIdsToBeInvited.includes(currentGuestId)) {
+      errors.push({ message: message })
+      break
+    }
+  }
+}
+
+ValidationContract.prototype.dontInviteYourself = (guestsIdsToBeInvited, userId, message) => {
+  if (guestsIdsToBeInvited.includes(userId)) {
+    errors.push({ message: message })
+  }
+}
+
 ValidationContract.prototype.errors = () => {
   return errors
 }

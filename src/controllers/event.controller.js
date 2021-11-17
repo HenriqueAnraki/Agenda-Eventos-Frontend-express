@@ -3,7 +3,6 @@
 const repository = require('../repositories/event.repository')
 // const ValidationContract = require('../validators/fluent-validator')
 const CustomError = require('../classes/customError')
-const userService = require('../services/user.service')
 const eventService = require('../services/event.service')
 const eventValidator = require('../validators/event.validator')
 
@@ -105,18 +104,15 @@ exports.addGuests = async (req, res, next) => {
   debug('add guests')
   const guestsIds = req.body.guests
   const eventId = req.params.id
+  const userId = req.id
 
-  const contractErrors = await eventValidator.validateRequiredValue(guestsIds, 'Convidados são obrigatórios.')
+  const contractErrors = await eventValidator.validateGuestsIds(guestsIds, eventId, userId)
   if (contractErrors) {
     return next(contractErrors)
   }
 
-  const userId = req.id
-
-  const newGuestsIds = await eventService.getNewGuestsIds(eventId, userId, guestsIds)
-
   // Convert the id array (guests) to event.guests format
-  const guestsToAdd = newGuestsIds.map(guestId => {
+  const guestsToAdd = guestsIds.map(guestId => {
     return {
       user: guestId,
       status: 'pending'
