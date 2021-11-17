@@ -5,6 +5,7 @@ const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const authService = require('../services/auth.service')
 const { HTTP_ERROR } = require('../enums/httpErrors')
+const userValidator = require('../validators/user.validator')
 
 const debug = require('debug')('server')
 
@@ -12,13 +13,9 @@ exports.createUser = async (req, res, next) => {
   debug('Create user')
   const body = req.body
 
-  const contractErrors = await userService.validateEmailAndPassword(body)
-  if (contractErrors.length > 0) {
-    const err = new CustomError('Dados enviados possuem erro.', {
-      status: HTTP_ERROR.BAD_REQUEST,
-      errors: contractErrors
-    })
-    return next(err)
+  const contractErrors = await userValidator.validateEmailAndPassword(body)
+  if (contractErrors) {
+    return next(contractErrors)
   }
 
   if (!(await userService.isEmailRegistered(body.email))) {
@@ -40,13 +37,9 @@ exports.login = async (req, res, next) => {
   debug('Login')
   const body = req.body
 
-  const contractErrors = await userService.validateEmailAndPassword(body)
-  if (contractErrors.length > 0) {
-    const err = new CustomError('Dados enviados possuem erro.', {
-      status: HTTP_ERROR.BAD_REQUEST,
-      errors: contractErrors
-    })
-    return next(err)
+  const contractErrors = await userValidator.validateEmailAndPassword(body)
+  if (contractErrors) {
+    return next(contractErrors)
   }
 
   const userData = await repository.findByEmail(body.email)
@@ -71,13 +64,9 @@ exports.getUserIdByEmail = async (req, res, next) => {
   debug('get user by emails')
   const email = req.params.email
 
-  const contractErrors = await userService.validateEmail(email)
-  if (contractErrors.length > 0) {
-    const err = new CustomError('Dados enviados possuem erro.', {
-      status: HTTP_ERROR.BAD_REQUEST,
-      errors: contractErrors
-    })
-    return next(err)
+  const contractErrors = await userValidator.validateEmail(email)
+  if (contractErrors) {
+    return next(contractErrors)
   }
 
   const data = await repository.getIdByEmail(email)

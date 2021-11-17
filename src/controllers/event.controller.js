@@ -5,6 +5,7 @@ const repository = require('../repositories/event.repository')
 const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const eventService = require('../services/event.service')
+const eventValidator = require('../validators/event.validator')
 
 const { allowedAnswers, ANSWERS } = require('../enums/answer')
 const { HTTP_ERROR } = require('../enums/httpErrors')
@@ -14,13 +15,9 @@ const debug = require('debug')('server')
 exports.createNewEvent = async (req, res, next) => {
   const body = req.body
 
-  const contractErrors = await eventService.validateEventData(body)
-  if (contractErrors.length > 0) {
-    const err = new CustomError('Dados enviados possuem erro.', {
-      status: HTTP_ERROR.BAD_REQUEST,
-      errors: contractErrors
-    })
-    return next(err)
+  const contractErrors = await eventValidator.validateEventData(body)
+  if (contractErrors) {
+    return next(contractErrors)
   }
 
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
@@ -66,13 +63,9 @@ exports.updateEvent = async (req, res, next) => {
   const body = req.body
   const eventId = req.params.id
 
-  const contractErrors = await eventService.validateEventData(body)
-  if (contractErrors.length > 0) {
-    const err = new CustomError('Dados enviados possuem erro.', {
-      status: HTTP_ERROR.BAD_REQUEST,
-      errors: contractErrors
-    })
-    return next(err)
+  const contractErrors = await eventValidator.validateEventData(body)
+  if (contractErrors) {
+    return next(contractErrors)
   }
 
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
@@ -112,13 +105,9 @@ exports.addGuests = async (req, res, next) => {
   const guestsIds = req.body.guests
   const eventId = req.params.id
 
-  const contractErrors = await eventService.validateRequiredValue(guestsIds, 'Convidados são obrigatórios.')
-  if (contractErrors.length > 0) {
-    const err = new CustomError('Dados enviados possuem erro.', {
-      status: HTTP_ERROR.BAD_REQUEST,
-      errors: contractErrors
-    })
-    return next(err)
+  const contractErrors = await eventValidator.validateRequiredValue(guestsIds, 'Convidados são obrigatórios.')
+  if (contractErrors) {
+    return next(contractErrors)
   }
 
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
@@ -146,13 +135,9 @@ exports.answerInvite = async (req, res, next) => {
   const answer = req.body.answer
   const eventId = req.params.id
 
-  const contractErrors = await eventService.validateRequiredValue(answer, 'Resposta é obrigatória.')
-  if (contractErrors.length > 0) {
-    const err = new CustomError('Dados enviados possuem erro.', {
-      status: HTTP_ERROR.BAD_REQUEST,
-      errors: contractErrors
-    })
-    return next(err)
+  const contractErrors = await eventValidator.validateRequiredValue(answer, 'Resposta é obrigatória.')
+  if (contractErrors) {
+    return next(contractErrors)
   }
 
   // Verifing if the answer is valid
