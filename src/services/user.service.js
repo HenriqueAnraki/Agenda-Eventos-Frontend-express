@@ -10,13 +10,10 @@ const authService = require('../services/auth.service')
 
 const saltRounds = 10
 
-exports.isEmailValid = async (email) => {
+exports.isEmailRegistered = async (email) => {
   const userWithEmail = await repository.findByEmail(email)
 
-  if (userWithEmail) {
-    return false
-  }
-  return true
+  return userWithEmail
 }
 
 exports.validateEmail = async (email) => {

@@ -21,7 +21,7 @@ exports.createUser = async (req, res, next) => {
     return next(err)
   }
 
-  if (await userService.isEmailValid(body.email)) {
+  if (!(await userService.isEmailRegistered(body.email))) {
     await repository.create({
       email: body.email,
       password: await userService.hashPassword(body.password)
