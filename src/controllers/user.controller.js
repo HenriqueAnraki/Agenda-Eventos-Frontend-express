@@ -4,6 +4,7 @@ const repository = require('../repositories/user.repository')
 const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const authService = require('../services/auth.service')
+const { HTTP_ERROR } = require('../enums/httpErrors')
 
 const debug = require('debug')('server')
 
@@ -14,7 +15,7 @@ exports.createUser = async (req, res, next) => {
   const contractErrors = await userService.validateEmailAndPassword(body)
   if (contractErrors.length > 0) {
     const err = new CustomError('Dados enviados possuem erro.', {
-      status: 400,
+      status: HTTP_ERROR.BAD_REQUEST,
       errors: contractErrors
     })
     return next(err)
@@ -26,11 +27,11 @@ exports.createUser = async (req, res, next) => {
       password: await userService.hashPassword(body.password)
     })
 
-    res.status(201).send({
+    res.status(HTTP_ERROR.CREATED).send({
       message: 'Cliente cadastrado com sucesso!'
     })
   } else {
-    const err = new CustomError('Email ja cadastrado!', { status: 400 })
+    const err = new CustomError('Email ja cadastrado!', { status: HTTP_ERROR.BAD_REQUEST })
     return next(err)
   }
 }
@@ -42,7 +43,7 @@ exports.login = async (req, res, next) => {
   const contractErrors = await userService.validateEmailAndPassword(body)
   if (contractErrors.length > 0) {
     const err = new CustomError('Dados enviados possuem erro.', {
-      status: 400,
+      status: HTTP_ERROR.BAD_REQUEST,
       errors: contractErrors
     })
     return next(err)
@@ -56,13 +57,13 @@ exports.login = async (req, res, next) => {
       email: userData.email
     })
 
-    res.status(200).send({
+    res.status(HTTP_ERROR.OK).send({
       token
     })
     return
   }
 
-  const err = new CustomError('Email ou senha inválidos!', { status: 401 })
+  const err = new CustomError('Email ou senha inválidos!', { status: HTTP_ERROR.UNAUTHORIZED })
   next(err)
 }
 
@@ -73,7 +74,7 @@ exports.getUserIdByEmail = async (req, res, next) => {
   const contractErrors = await userService.validateEmail(email)
   if (contractErrors.length > 0) {
     const err = new CustomError('Dados enviados possuem erro.', {
-      status: 400,
+      status: HTTP_ERROR.BAD_REQUEST,
       errors: contractErrors
     })
     return next(err)
@@ -83,9 +84,9 @@ exports.getUserIdByEmail = async (req, res, next) => {
 
   if (!data) {
     const err = new CustomError('Email não encontrado.', {
-      status: 400
+      status: HTTP_ERROR.BAD_REQUEST
     })
     return next(err)
   }
-  res.status(200).send(data)
+  res.status(HTTP_ERROR.OK).send(data)
 }

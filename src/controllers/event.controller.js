@@ -6,7 +6,8 @@ const CustomError = require('../classes/customError')
 const userService = require('../services/user.service')
 const eventService = require('../services/event.service')
 
-const { allowedAnswers, answersEnum } = require('../config')
+const { allowedAnswers, ANSWERS } = require('../enums/answer')
+const { HTTP_ERROR } = require('../enums/httpErrors')
 
 const debug = require('debug')('server')
 
@@ -16,7 +17,7 @@ exports.createNewEvent = async (req, res, next) => {
   const contractErrors = await eventService.validateEventData(body)
   if (contractErrors.length > 0) {
     const err = new CustomError('Dados enviados possuem erro.', {
-      status: 400,
+      status: HTTP_ERROR.BAD_REQUEST,
       errors: contractErrors
     })
     return next(err)
@@ -25,7 +26,7 @@ exports.createNewEvent = async (req, res, next) => {
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
 
   if (await eventService.hasEventOverlap(userId, body)) {
-    const err = new CustomError('Evento se sobrepoem com outros!', { status: 400 })
+    const err = new CustomError('Evento se sobrepoem com outros!', { status: HTTP_ERROR.BAD_REQUEST })
     return next(err)
   }
 
@@ -36,7 +37,7 @@ exports.createNewEvent = async (req, res, next) => {
     owner: userId
   })
 
-  res.status(201).send({
+  res.status(HTTP_ERROR.CREATED).send({
     message: 'Evento criado com sucesso!'
   })
 }
@@ -49,7 +50,7 @@ exports.getUserEvents = async (req, res, next) => {
 
   const userEvents = await repository.getByOwner(userId)
 
-  res.status(200).send(userEvents)
+  res.status(HTTP_ERROR.OK).send(userEvents)
 }
 
 exports.getUserEventById = async (req, res, next) => {
@@ -57,7 +58,7 @@ exports.getUserEventById = async (req, res, next) => {
 
   const userEvent = await repository.getById(req.params.id, userId)
 
-  res.status(200).send(userEvent)
+  res.status(HTTP_ERROR.OK).send(userEvent)
 }
 
 exports.updateEvent = async (req, res, next) => {
@@ -68,7 +69,7 @@ exports.updateEvent = async (req, res, next) => {
   const contractErrors = await eventService.validateEventData(body)
   if (contractErrors.length > 0) {
     const err = new CustomError('Dados enviados possuem erro.', {
-      status: 400,
+      status: HTTP_ERROR.BAD_REQUEST,
       errors: contractErrors
     })
     return next(err)
@@ -77,7 +78,7 @@ exports.updateEvent = async (req, res, next) => {
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
 
   if (await eventService.willUpdatedEventOverlap(userId, eventId, body)) {
-    const err = new CustomError('Evento irá se sobrepor com outros!', { status: 400 })
+    const err = new CustomError('Evento irá se sobrepor com outros!', { status: HTTP_ERROR.BAD_REQUEST })
     return next(err)
   }
 
@@ -88,7 +89,7 @@ exports.updateEvent = async (req, res, next) => {
     owner: userId
   })
 
-  res.status(200).send({
+  res.status(HTTP_ERROR.OK).send({
     message: 'Evento atualizado com sucesso!'
   })
 }
@@ -101,7 +102,7 @@ exports.deleteEvent = async (req, res, next) => {
 
   await repository.delete(eventId, userId)
 
-  res.status(200).send({
+  res.status(HTTP_ERROR.OK).send({
     message: 'Evento removido com sucesso!'
   })
 }
@@ -114,7 +115,7 @@ exports.addGuests = async (req, res, next) => {
   const contractErrors = await eventService.validateRequiredValue(guestsIds, 'Convidados são obrigatórios.')
   if (contractErrors.length > 0) {
     const err = new CustomError('Dados enviados possuem erro.', {
-      status: 400,
+      status: HTTP_ERROR.BAD_REQUEST,
       errors: contractErrors
     })
     return next(err)
@@ -134,7 +135,7 @@ exports.addGuests = async (req, res, next) => {
 
   await repository.addGuests(eventId, userId, guestsToAdd)
 
-  res.status(200).send({
+  res.status(HTTP_ERROR.OK).send({
     message: 'Evento atualizado com sucesso!'
   })
 }
@@ -148,7 +149,7 @@ exports.answerInvite = async (req, res, next) => {
   const contractErrors = await eventService.validateRequiredValue(answer, 'Resposta é obrigatória.')
   if (contractErrors.length > 0) {
     const err = new CustomError('Dados enviados possuem erro.', {
-      status: 400,
+      status: HTTP_ERROR.BAD_REQUEST,
       errors: contractErrors
     })
     return next(err)
@@ -157,7 +158,7 @@ exports.answerInvite = async (req, res, next) => {
   // Verifing if the answer is valid
   if (!allowedAnswers.includes(answer)) {
     const err = new CustomError('Resposta inválida.', {
-      status: 400
+      status: HTTP_ERROR.BAD_REQUEST
     })
     return next(err)
   }
@@ -169,14 +170,14 @@ exports.answerInvite = async (req, res, next) => {
   debug(eventToAnswer)
 
   // If refusing, don't verify overlap
-  if (answer === answersEnum.POSITIVE && await eventService.willUpdatedEventOverlap(userId, eventId, eventToAnswer)) {
-    const err = new CustomError('Evento irá se sobrepor com outros!', { status: 400 })
+  if (answer === ANSWERS.POSITIVE && await eventService.willUpdatedEventOverlap(userId, eventId, eventToAnswer)) {
+    const err = new CustomError('Evento irá se sobrepor com outros!', { status: HTTP_ERROR.BAD_REQUEST })
     return next(err)
   }
 
   await repository.updateGuestStatus(eventId, userId, answer)
 
-  res.status(200).send({
+  res.status(HTTP_ERROR.OK).send({
     message: 'Resposta atualizada com sucesso!'
   })
 }
