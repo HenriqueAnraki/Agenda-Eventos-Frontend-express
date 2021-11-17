@@ -1,5 +1,7 @@
 'use strict'
 
+require('dotenv').config()
+
 const debug = require('debug')('server')
 const http = require('http')
 

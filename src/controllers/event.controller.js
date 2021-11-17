@@ -11,7 +11,6 @@ const { allowedAnswers, answersEnum } = require('../config')
 const debug = require('debug')('server')
 
 exports.createNewEvent = async (req, res, next) => {
-  // [todo]está convertendo para UTC
   const body = req.body
 
   const contractErrors = await eventService.validateEventData(body)
@@ -61,10 +60,8 @@ exports.getUserEventById = async (req, res, next) => {
   res.status(200).send(userEvent)
 }
 
-// [todo] falar quando o usuario tenta editar um evento que não é seu?
 exports.updateEvent = async (req, res, next) => {
   debug('update event')
-  // [todo]está convertendo para UTC
   const body = req.body
   const eventId = req.params.id
 
@@ -125,7 +122,6 @@ exports.addGuests = async (req, res, next) => {
 
   const userId = await userService.getUserIdFromToken(req.headers.authorization)
 
-  // [todo] control repeated ids
   const newGuestsIds = await eventService.getNewGuestsIds(eventId, userId, guestsIds)
 
   // Convert the id array (guests) to event.guests format

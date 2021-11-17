@@ -8,7 +8,6 @@ exports.createNewEvent = async (data) => {
   await event.save()
 }
 
-// [TODO] CHANGE NAME (get by user ID)
 /**
  * Get user events, including pending and confirmed invites
  */
@@ -82,7 +81,8 @@ exports.delete = async (eventId, userId) => {
   })
 }
 
-exports.updateGuests = async (eventId, userId, guests) => {
+// exports.updateGuests = async (eventId, userId, guests) => {
+exports.addGuests = async (eventId, userId, guests) => {
   await Event.findOneAndUpdate({
     _id: eventId,
     owner: userId

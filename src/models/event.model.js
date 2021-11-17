@@ -40,12 +40,4 @@ const schema = new Schema({
 },
 options)
 
-// schema.virtual('startTZ').get(function () {
-//   return date.format(this.start, 'YYYY-MM-DD HH:mm:ss')
-// })
-
-// schema.virtual('endTZ').get(function () {
-//   return date.format(this.end, 'YYYY-MM-DD HH:mm:ss')
-// })
-
 module.exports = mongoose.model('Event', schema)
