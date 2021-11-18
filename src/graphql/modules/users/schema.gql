@@ -1,0 +1,32 @@
+type User {
+  _id: ID!
+  email: String!
+  password: String
+}
+
+type UserWithoutPassword {
+  _id: ID!
+  email: String!
+}
+
+input UserInput {
+  email: String!
+  password: String!
+}
+
+type Token {
+  token: String!
+}
+
+type Message {
+  message: String!
+}
+
+type Query {
+  user(email: String!): UserWithoutPassword!
+  login(data: UserInput!): Token!
+}
+
+type Mutation {
+  createUser(data: UserInput!): Message!
+}

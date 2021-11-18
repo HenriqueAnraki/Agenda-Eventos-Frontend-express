@@ -7,10 +7,19 @@ const http = require('http')
 
 const app = require('../src/app')
 
+// GraphQL imports
+const { startApolloServer } = require('./graphqlServer')
+const typeDefs = require('../src/graphql/typeDefs')
+const resolvers = require('../src/graphql/resolvers')
+
 const port = process.env.PORT || '4000'
 app.set('port', port)
 
 const server = http.createServer(app)
+
+// starting graphQL server
+startApolloServer(typeDefs, resolvers, app)
+
 server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })

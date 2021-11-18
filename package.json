@@ -6,16 +6,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./server/server.js",
-    "dev": "DEBUG=server nodemon ./server/server.js"
+    "dev": "DEBUG=server nodemon ./server/server.js -e js,gql"
   },
   "author": "Henrique Anraki",
   "license": "ISC",
   "dependencies": {
+    "@graphql-tools/load-files": "^6.5.2",
+    "@graphql-tools/merge": "^8.2.1",
+    "apollo-server-express": "^3.5.0",
     "bcryptjs": "^2.4.3",
     "date-and-time": "^2.0.1",
     "debug": "^4.3.2",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "graphql": "^15.7.2",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "mongoose": "^6.0.12"
