@@ -42,9 +42,12 @@ exports.authorize = async (req, res, next) => {
 exports.getUserIdFromToken = (fullToken) => {
   // Removing 'Bearer '
   const token = fullToken.split(' ')[1]
-  const userData = decodeToken(token)
-
-  return userData.id
+  try {
+    const userData = decodeToken(token)
+    return userData.id
+  } catch (err) {
+    return null
+  }
 }
 
 exports.authorizeGql = async (req) => {

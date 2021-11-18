@@ -38,7 +38,7 @@ app.use(function (req, res, next) {
 })
 
 app.use(function (req, res, next) {
-  const token = req.headers.authorization
+  const token = req.headers.authorization || ''
 
   if (token) {
     req.id = authService.getUserIdFromToken(token)
