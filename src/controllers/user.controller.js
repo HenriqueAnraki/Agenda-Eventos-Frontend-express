@@ -64,6 +64,8 @@ exports.getUserIdByEmail = async (req, res, next) => {
   debug('get user by emails')
   const email = req.params.email
 
+  console.log('AQUIIIIIII')
+
   const contractErrors = await userValidator.validateEmail(email)
   if (contractErrors) {
     return next(contractErrors)

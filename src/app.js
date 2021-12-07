@@ -1,5 +1,12 @@
 'use strict'
 
+// [todo]tranferido do server.js
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env.dev'
+})
+
+console.log(process.env.NODE_ENV)
+
 const express = require('express')
 const mongoose = require('mongoose')
 const config = require('./config')
@@ -8,8 +15,8 @@ const customErrorHandler = require('./services/customErrorHandler.service')
 const authService = require('./services/auth.service')
 
 // Models imports
-const User = require('./models/user.model')
-const Event = require('./models/event.model')
+require('./models/user.model')
+require('./models/event.model')
 
 // Routes imports
 const indexRoute = require('./routes/index.route')

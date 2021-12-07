@@ -129,6 +129,8 @@ exports.addGuests = async (req, res, next) => {
 exports.answerInvite = async (req, res, next) => {
   debug('answer invite')
 
+  console.log('AQUIQUIUAOISDHAHSBDAOUHSDUAHSDHOUADHASUIDHIUFAOFDHAHSDFKJSHF')
+
   const answer = req.body.answer
   const eventId = req.params.id
 
