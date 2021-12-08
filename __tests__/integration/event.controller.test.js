@@ -24,6 +24,7 @@ describe('Event Integration tests', () => {
   })
 
   beforeAll(async () => {
+  // beforeEach(async () => {
     await insertUserSeeds(usersSeeds, usersList)
 
     userToLoginToken = await generateUserToken(usersList.toLogin)
@@ -31,6 +32,11 @@ describe('Event Integration tests', () => {
 
     await insertEventSeeds(eventsSeeds, eventsList, usersList.toLogin.id)
   })
+
+  // afterEach(async () => {
+  //   // mongoose.disconnect()
+  //   await dbHandler.clearDatabase()
+  // })
 
   it('should create an event for a valid user', async () => {
     await request.post('/events/')

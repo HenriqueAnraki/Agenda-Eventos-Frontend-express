@@ -18,7 +18,6 @@ let userValidToken = null
 describe('User Tests', () => {
   afterAll(async () => {
     // mongoose.disconnect()
-    console.log('clearing db')
     await dbHandler.clearDatabase()
     await mongoose.connection.close()
     // done()
@@ -31,9 +30,7 @@ describe('User Tests', () => {
 
   // afterEach(async () => {
   //   // mongoose.disconnect()
-  //   console.log('clearing db')
   //   await dbHandler.clearDatabase()
-  //   // done()
   // })
 
   describe('Testing login', () => {
@@ -90,8 +87,6 @@ describe('User Tests', () => {
     })
 
     it('should receive JWT token when authenticated with valid credentials', async () => {
-      console.log('trying to log in')
-      console.log(usersList.toLogin)
       const res = await request
         .post('/users/login')
         .send(usersList.toLogin)
@@ -116,8 +111,6 @@ describe('User Tests', () => {
         .get(`/users/${userToGetInfo.email}`)
         .set('Authorization', `Bearer ${userValidToken}`)
         .expect(200)
-
-      console.log(res.body)
 
       expect(res.body).toHaveProperty('_id')
       expect(res.body).toHaveProperty('email', userToGetInfo.email)
